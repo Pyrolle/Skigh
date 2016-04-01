@@ -6,14 +6,16 @@ speed = 1
 spinCD = 0
 frame = 0
 nextFrame = 0
+spined = False
 #CONSTANTS
 Dir = 'D:\Program Data\OneDrive\Programs\Games\Skigh'
 ##TEXTURES
 bg = pygame.image.load(Dir + r'\bg.jpg')
-player = pygame.image.load(Dir + r'\Winged.png')
-player = pygame.transform.scale(player,(204,100))
-playerSpin = pygame.image.load(Dir + r'\Winged.png')
-playerL = [player]
+playerWinged = pygame.image.load(Dir + r'\Winged.png')
+playerWinged = pygame.transform.scale(playerWinged,(204,100))
+playerSpin = pygame.image.load(Dir + r'\Spined.png')
+playerSpin = pygame.transform.scale(playerSpin,(68,100))
+playerL = [playerWinged]
 comet1 = pygame.image.load(Dir + r'\comet1.png')
 comet1 = pygame.transform.scale(comet1,(100,250))
 comet2 = pygame.image.load(Dir + r'\comet2.png')
@@ -24,21 +26,63 @@ comet4 = pygame.image.load(Dir + r'\comet4.png')
 comet4 = pygame.transform.scale(comet4,(100,250))
 cometL = [comet1,comet2,comet3,comet4]
 #CLASSES
-class Comet():
+class Comet(pygame.sprite.Sprite):
     def __init__(self):
+        super().__init__()
         self.spriteL = cometL
         self.frameRand = random.randint(1,4)
         self.frame = self.frameRand
-        self.image = self.spriteL[self.frameRand]
+        self.image = self.spriteL[self.frameRand-1]
         self.rect = self.image.get_rect()
-        self.speed = random.randint(0,3)
+        self.speed = random.randint(1,3)
     def update(self):
-        self.rect.y -= speed*self.speed
-class Player():
+        self.rect.y += 2*speed*self.speed
+        if self.rect.y > 800:
+            self.rect.y = -(random.randint(100,1000))
+            self.rect.x = random.randint(0,700)
+            self.speed = random.randint(1,3)
+cometsList = pygame.sprite.Group()
+for i in range(1,3):
+    comet = Comet()
+    n = random.randrange(10000, 50000)
+    comet.rect.y = -n
+    comet.rect.x = random.randint(0,700)
+    cometsList.add(comet)
+comet = Comet()
+comet.rect.y = -500
+comet.rect.x = random.randint(0,700)
+cometsList.add(comet)
+class Player(pygame.sprite.Sprite):
     def __init__(self):
+        super().__init__()
         self.spriteL = playerL
         self.image = self.spriteL[0]
         self.rect = self.image.get_rect()
+PlayerList = pygame.sprite.Group()
+player = Player()
+player.rect.y = 650
+PlayerList.add(player)
+#FUNCTIONS
+def spin():
+    global speed, spinCD, spined
+    player.image = playerSpin
+    x = player.rect.x
+    player.rect = player.image.get_rect()
+    player.rect.x = x+68
+    player.rect.y = 650
+    speed *= 2
+    spinCD = pygame.time.get_ticks()+ 1000
+    spined = True
+def unspin():
+    global speed, spinCD, spined
+    player.image = player.spriteL[0]
+    x = player.rect.x
+    player.rect = player.image.get_rect()
+    player.rect.x = x-68
+    player.rect.y = 650
+    speed /= 2
+    spined = False
+
 #SCREEN
 size = [800, 800]
 screen = pygame.display.set_mode(size)
@@ -52,14 +96,24 @@ while done == False:
             done = True
     keys=pygame.key.get_pressed()
     if keys[pygame.K_a]:
-        player.rect.x -= 5+2*speed
+        player.rect.x -= 8
         while player.rect.x < 0:
             player.rect.x += 1
     if keys[pygame.K_d]:
-        player.rect.x += 5+2*speed
+        player.rect.x += 8
         while player.rect.x > 596:
             player.rect.x -= 1
-    if keys[pygame.K_SPACE]:
+    if keys[pygame.K_SPACE] and spinCD < pygame.time.get_ticks():
         spin()
+    if spinCD -500 < pygame.time.get_ticks() and spined == True:
+        unspin()
+    if pygame.sprite.spritecollideany(player, cometsList) != None:
+        print("game over")
+        done = True
+
+    screen.blit(bg,(-100,-100))
+    cometsList.update()
+    cometsList.draw(screen)
+    PlayerList.draw(screen)
 
     pygame.display.flip()
