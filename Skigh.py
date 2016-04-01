@@ -4,6 +4,7 @@ pygame.init()
 done = False
 speed = 1
 spinCD = 0
+frameCD = 0
 frame = 0
 nextFrame = 0
 spined = False
@@ -36,11 +37,18 @@ class Comet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.speed = random.randint(1,3)
     def update(self):
+        global frameCD
         self.rect.y += 2*speed*self.speed
         if self.rect.y > 800:
             self.rect.y = -(random.randint(100,1000))
             self.rect.x = random.randint(0,700)
             self.speed = random.randint(1,3)
+        if frameCD < pygame.time.get_ticks():
+            self.frame += 1
+            if self.frame > 4:
+                self.frame -= 4
+            self.image = self.spriteL[self.frame-1]
+            frameCD = pygame.time.get_ticks() + 100
 cometsList = pygame.sprite.Group()
 for i in range(1,3):
     comet = Comet()
@@ -111,9 +119,12 @@ while done == False:
         print("game over")
         done = True
 
+
+
     screen.blit(bg,(-100,-100))
     cometsList.update()
     cometsList.draw(screen)
     PlayerList.draw(screen)
+
 
     pygame.display.flip()
