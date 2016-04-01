@@ -119,12 +119,9 @@ while done == False:
         print("game over")
         done = True
 
-
-
     screen.blit(bg,(-100,-100))
     cometsList.update()
     cometsList.draw(screen)
     PlayerList.draw(screen)
-
 
     pygame.display.flip()
