@@ -4,19 +4,29 @@ pygame.init()
 done = False
 speed = 1
 spinCD = 0
-frameCD = 0
-frame = 0
+cFrameCD = 0
+pFrameCD = 0
 nextFrame = 0
 spined = False
 #CONSTANTS
 Dir = 'D:\Program Data\OneDrive\Programs\Games\Skigh'
 ##TEXTURES
 bg = pygame.image.load(Dir + r'\bg.jpg')
-playerWinged = pygame.image.load(Dir + r'\Winged.png')
-playerWinged = pygame.transform.scale(playerWinged,(204,100))
+playerWinged1 = pygame.image.load(Dir + r'\wing (1).png')
+playerWinged2 = pygame.image.load(Dir + r'\wing (2).png')
+playerWinged3 = pygame.image.load(Dir + r'\wing (3).png')
+playerWinged4 = pygame.image.load(Dir + r'\wing (4).png')
+playerWinged5 = pygame.image.load(Dir + r'\wing (5).png')
+playerWinged6 = pygame.image.load(Dir + r'\wing (6).png')
+playerWinged7 = pygame.image.load(Dir + r'\wing (7).png')
+playerWinged8 = pygame.image.load(Dir + r'\wing (8).png')
+playerWinged9 = pygame.image.load(Dir + r'\wing (9).png')
+playerWinged10 = pygame.image.load(Dir + r'\wing (10).png')
 playerSpin = pygame.image.load(Dir + r'\Spined.png')
 playerSpin = pygame.transform.scale(playerSpin,(68,100))
-playerL = [playerWinged]
+
+playerL = [pygame.transform.scale(playerWinged1,(223,150)),pygame.transform.scale(playerWinged2,(223,150)),pygame.transform.scale(playerWinged3,(223,150)),pygame.transform.scale(playerWinged4,(223,150)),pygame.transform.scale(playerWinged5,(223,150)),pygame.transform.scale(playerWinged6,(223,150)),pygame.transform.scale(playerWinged7,(223,150)),pygame.transform.scale(playerWinged8,(223,150)),pygame.transform.scale(playerWinged9,(223,150)),pygame.transform.scale(playerWinged10,(223,150))]
+
 comet1 = pygame.image.load(Dir + r'\comet1.png')
 comet1 = pygame.transform.scale(comet1,(100,250))
 comet2 = pygame.image.load(Dir + r'\comet2.png')
@@ -37,18 +47,18 @@ class Comet(pygame.sprite.Sprite):
         self.rect = self.image.get_rect()
         self.speed = random.randint(1,3)
     def update(self):
-        global frameCD
+        global cFrameCD
         self.rect.y += 2*speed*self.speed
         if self.rect.y > 800:
             self.rect.y = -(random.randint(100,1000))
             self.rect.x = random.randint(0,700)
             self.speed = random.randint(1,3)
-        if frameCD < pygame.time.get_ticks():
+        if cFrameCD < pygame.time.get_ticks():
             self.frame += 1
             if self.frame > 4:
                 self.frame -= 4
             self.image = self.spriteL[self.frame-1]
-            frameCD = pygame.time.get_ticks() + 100
+            cFrameCD = pygame.time.get_ticks() + 100
 cometsList = pygame.sprite.Group()
 for i in range(1,3):
     comet = Comet()
@@ -66,6 +76,16 @@ class Player(pygame.sprite.Sprite):
         self.spriteL = playerL
         self.image = self.spriteL[0]
         self.rect = self.image.get_rect()
+        self.frame = 1
+    def update(self):
+        global pFrameCD, spined
+        if pFrameCD < pygame.time.get_ticks():
+            self.frame += 1
+            if self.frame > 10:
+                self.frame -= 10
+            if spined == False:
+                self.image = self.spriteL[self.frame-1]
+            pFrameCD = pygame.time.get_ticks() + 100
 PlayerList = pygame.sprite.Group()
 player = Player()
 player.rect.y = 650
@@ -123,5 +143,6 @@ while done == False:
     cometsList.update()
     cometsList.draw(screen)
     PlayerList.draw(screen)
+    player.update()
 
     pygame.display.flip()
