@@ -27,59 +27,53 @@ playerSpin = pygame.transform.scale(playerSpin,(68,100))
 
 playerL = [pygame.transform.scale(playerWinged1,(223,150)),pygame.transform.scale(playerWinged2,(223,150)),pygame.transform.scale(playerWinged3,(223,150)),pygame.transform.scale(playerWinged4,(223,150)),pygame.transform.scale(playerWinged5,(223,150)),pygame.transform.scale(playerWinged6,(223,150)),pygame.transform.scale(playerWinged7,(223,150)),pygame.transform.scale(playerWinged8,(223,150)),pygame.transform.scale(playerWinged9,(223,150)),pygame.transform.scale(playerWinged10,(223,150))]
 
-comet1 = pygame.image.load(Dir + r'\comet1.png')
-comet1 = pygame.transform.scale(comet1,(100,250))
-comet2 = pygame.image.load(Dir + r'\comet2.png')
-comet2 = pygame.transform.scale(comet2,(100,250))
-comet3 = pygame.image.load(Dir + r'\comet3.png')
-comet3 = pygame.transform.scale(comet3,(100,250))
-comet4 = pygame.image.load(Dir + r'\comet4.png')
-comet4 = pygame.transform.scale(comet4,(100,250))
-cometL = [comet1,comet2,comet3,comet4]
+cometS1 = pygame.image.load(Dir + r'\comet1.png')
+cometS2 = pygame.image.load(Dir + r'\comet2.png')
+cometS3 = pygame.image.load(Dir + r'\comet3.png')
+cometS4 = pygame.image.load(Dir + r'\comet4.png')
 #CLASSES
 class Comet(pygame.sprite.Sprite):
     def __init__(self):
         super().__init__()
-        self.spriteL = cometL
+        self.spriteL = [pygame.transform.scale(cometS1,(100,250)),pygame.transform.scale(cometS2,(100,250)),pygame.transform.scale(cometS3,(100,250)),pygame.transform.scale(cometS4,(100,250))]
         self.frameRand = random.randint(1,4)
         self.frame = self.frameRand
         self.image = self.spriteL[self.frameRand-1]
         self.rect = self.image.get_rect()
-        self.speed = random.randint(1,3)
+        self.speed = random.randint(2,3)
+        self.FrameCD = 100
+
     def update(self):
-        global cFrameCD
         self.rect.y += 2*speed*self.speed
         if self.rect.y > 800:
             self.rect.y = -(random.randint(100,1000))
             self.rect.x = random.randint(0,700)
             self.speed = random.randint(2,4)
-        if cFrameCD < pygame.time.get_ticks():
+        if self.FrameCD < pygame.time.get_ticks():
             self.frame += 1
             if self.frame > 4:
                 self.frame -= 4
+                print(self, 'changed')
             self.image = self.spriteL[self.frame-1]
-            cFrameCD = pygame.time.get_ticks() + 100
+            self.FrameCD = pygame.time.get_ticks() + 100
 cometsList = pygame.sprite.Group()
 
 comet1 = Comet()
-n = random.randrange(1000, 10000)
-comet1.rect.y = -n
+comet1.rect.y = -random.randrange(1000, 10000)
 comet1.rect.x = random.randint(0,700)
 cometsList.add(comet1)
 
 comet2 = Comet()
-n = random.randrange(1000, 10000)
-comet2.rect.y = -n
+comet2.rect.y = -random.randrange(1000, 10000)
 comet2.rect.x = random.randint(0,700)
 cometsList.add(comet2)
 
-comet = Comet()
 comet3 = Comet()
-n = random.randrange(1000, 10000)
-comet3.rect.y = -n
+comet3.rect.y = -random.randrange(1000, 10000)
 comet3.rect.x = random.randint(0,700)
 cometsList.add(comet3)
 
+comet = Comet()
 comet.rect.y = -500
 comet.rect.x = random.randint(0,700)
 cometsList.add(comet)
@@ -154,9 +148,16 @@ while done == False:
         done = True
 
     screen.blit(bg,(-100+ player.rect.x/6.5,-100))
-    cometsList.update()
+
+
+
     cometsList.draw(screen)
     PlayerList.draw(screen)
+    comet.update()
+    comet1.update()
+    comet2.update()
+    comet3.update()
     player.update()
-
+    print(comet.frame)
+    print(cFrameCD, pygame.time.get_ticks())
     pygame.display.flip()
